@@ -17,6 +17,13 @@ export default function AddPositionPage() {
   const [updateId, setUpdateId] = useState(null);
   const router = useRouter();
 
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token !== 'admin-token') {
+      router.push('/'); // Redirect to login if token doesn't match
+    }
+  }, [router]);
   // Fetch positions when the component mounts and when needed
   const fetchPositions = async () => {
     try {

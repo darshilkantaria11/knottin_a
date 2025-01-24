@@ -8,42 +8,39 @@ export default function AddPositionPage() {
     positionName: '',
     shortDescription: '',
     longDescription: '',
-    positionType: 'Full-time', // default value
+    positionType: 'Full-time',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [positions, setPositions] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateId, setUpdateId] = useState(null);
+  const [showForm, setShowForm] = useState(false); // State to toggle form visibility
   const router = useRouter();
-
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token !== 'admin-token') {
-      router.push('/'); // Redirect to login if token doesn't match
+      router.push('/');
     }
   }, [router]);
-  // Fetch positions when the component mounts and when needed
+
   const fetchPositions = async () => {
     try {
       const response = await fetch('/api/positions');
-      console.log(response)
       const data = await response.json();
-      console.log(data)
       if (response.ok) {
         setPositions(data);
       } else {
         setError(data.message || 'Failed to fetch positions.');
       }
     } catch (err) {
-      console.log(err); // Log the error for debugging
       setError('Error fetching positions.');
     }
   };
 
   useEffect(() => {
-    fetchPositions(); // Call fetch positions on mount
+    fetchPositions();
   }, []);
 
   const handleChange = (e) => {
@@ -56,11 +53,11 @@ export default function AddPositionPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(''); // Clear error message before making the request
+    setError('');
 
     try {
       const response = await fetch(isUpdating ? `/api/updateposition/${updateId}` : '/api/addposition', {
-        method: isUpdating ? 'PUT' : 'POST', // Use PUT for updates
+        method: isUpdating ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -71,22 +68,21 @@ export default function AddPositionPage() {
       setLoading(false);
 
       if (response.ok) {
-        // Reset form and fetch positions again
         setForm({
           positionName: '',
           shortDescription: '',
           longDescription: '',
-          positionType: 'Full-time', // Reset to default
+          positionType: 'Full-time',
         });
         setIsUpdating(false);
         setUpdateId(null);
-        fetchPositions(); // Refetch positions after adding/updating
+        setShowForm(false); // Hide the form after successful submission
+        fetchPositions();
       } else {
         setError(data.message || 'Something went wrong.');
       }
     } catch (err) {
       setLoading(false);
-      console.error(err); // Log the error for debugging
       setError('Error submitting the form.');
     }
   };
@@ -99,28 +95,28 @@ export default function AddPositionPage() {
       positionType: position.positionType,
     });
     setIsUpdating(true);
-    setUpdateId(position._id); // Store the ID for updating
+    setUpdateId(position._id);
+    setShowForm(true); // Show the form when editing
   };
 
   const handleDelete = async (id) => {
     if (confirm('Are you sure you want to delete this position?')) {
-      setLoading(true); // Indicate loading state
+      setLoading(true);
       try {
         const response = await fetch(`/api/deleteposition/${id}`, {
           method: 'DELETE',
         });
 
         if (response.ok) {
-          fetchPositions(); // Refresh positions after deletion
+          fetchPositions();
         } else {
           const data = await response.json();
           setError(data.message || 'Failed to delete position.');
         }
       } catch (err) {
-        console.error(err); // Log the error for debugging
         setError('Error deleting position.');
       } finally {
-        setLoading(false); // Ensure loading state is reset
+        setLoading(false);
       }
     }
   };
@@ -129,70 +125,93 @@ export default function AddPositionPage() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-g3 p-4">
       <div className="bg-white p-8 rounded-lg shadow-md w-full container mx-auto">
         <h1 className="text-3xl font-bold text-g4 mb-6">Manage Positions</h1>
-        
-        {/* Form for Adding/Updating Position */}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Position Name</label>
-            <input
-              type="text"
-              name="positionName"
-              value={form.positionName}
-              onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              required
-            />
-          </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Short Description</label>
-            <input
-              type="text"
-              name="shortDescription"
-              value={form.shortDescription}
-              onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              required
-            />
-          </div>
+        <button
+          onClick={() => {
+            setShowForm(true); // Show the form
+            setIsUpdating(false); // Reset to adding mode
+            setForm({
+              positionName: '',
+              shortDescription: '',
+              longDescription: '',
+              positionType: 'Full-time',
+            });
+          }}
+          className="bg-g2 text-white py-2 px-4 rounded-md shadow-lg hover:bg-g4 transition duration-300"
+        >
+          Add Position
+        </button>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Long Description</label>
-            <textarea
-              name="longDescription"
-              value={form.longDescription}
-              onChange={handleChange}
-              rows="8"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              required
-            ></textarea>
-          </div>
+        {showForm && (
+          <form onSubmit={handleSubmit} className="mt-6">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Position Name</label>
+              <input
+                type="text"
+                name="positionName"
+                value={form.positionName}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                required
+              />
+            </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Position Type</label>
-            <select
-              name="positionType"
-              value={form.positionType}
-              onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Short Description</label>
+              <input
+                type="text"
+                name="shortDescription"
+                value={form.shortDescription}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Long Description</label>
+              <textarea
+                name="longDescription"
+                value={form.longDescription}
+                onChange={handleChange}
+                rows="8"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                required
+              ></textarea>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Position Type</label>
+              <select
+                name="positionType"
+                value={form.positionType}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+              >
+                <option value="Full-time">Full-time</option>
+                <option value="Part-time">Part-time</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-g2 text-white py-2 px-4 rounded-md shadow-lg hover:bg-g4 transition duration-300"
+              disabled={loading}
             >
-              <option value="Full-time">Full-time</option>
-              <option value="Part-time">Part-time</option>
-            </select>
-          </div>
+              {loading ? 'Saving...' : isUpdating ? 'Update Position' : 'Add Position'}
+            </button>
 
-          <button
-            type="submit"
-            className="w-full bg-g2 text-white py-2 px-4 rounded-md shadow-lg hover:bg-g4 transition duration-300"
-            disabled={loading}
-          >
-            {loading ? 'Saving...' : isUpdating ? 'Update Position' : 'Add Position'}
-          </button>
+            <button
+              onClick={() => setShowForm(false)}
+              className="w-full mt-2 bg-gray-400 text-white py-2 px-4 rounded-md shadow-lg hover:bg-gray-500 transition duration-300"
+            >
+              Cancel
+            </button>
 
-          {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
-        </form>
+            {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+          </form>
+        )}
 
-        {/* Displaying Positions */}
         <h2 className="text-2xl font-bold text-g4 mt-6">Current Positions</h2>
         {positions.length === 0 ? (
           <p className="text-gray-500">No positions added.</p>

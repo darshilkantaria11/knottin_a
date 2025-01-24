@@ -18,6 +18,7 @@ export default function AddSlotsPage() {
   const [slots, setSlots] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateId, setUpdateId] = useState(null);
+  const [showForm, setShowForm] = useState(false); // Toggle form visibility
   const router = useRouter();
 
   useEffect(() => {
@@ -93,6 +94,7 @@ export default function AddSlotsPage() {
         });
         setIsUpdating(false);
         setUpdateId(null);
+        setShowForm(false); // Hide form after submission
         fetchSlots(); // Refetch slots after adding/updating
       } else {
         setError(data.message || 'Something went wrong.');
@@ -103,6 +105,21 @@ export default function AddSlotsPage() {
     }
   };
 
+  const handleAddSlot = () => {
+    setForm({
+      date: '',
+      slots: {
+        '10am-11am': false,
+        '11am-12pm': false,
+        '12pm-1pm': false,
+        '1pm-2pm': false,
+      },
+    });
+    setIsUpdating(false);
+    setUpdateId(null);
+    setShowForm(true); // Show the form for adding a slot
+  };
+
   const handleUpdate = (slot) => {
     setForm({
       date: slot.date,
@@ -110,6 +127,7 @@ export default function AddSlotsPage() {
     });
     setIsUpdating(true);
     setUpdateId(slot._id); // Store the ID for updating
+    setShowForm(true); // Show the form for updating
   };
 
   const handleDelete = async (id) => {
@@ -139,48 +157,60 @@ export default function AddSlotsPage() {
       <div className="bg-white p-8 rounded-lg shadow-md w-full container mx-auto">
         <h1 className="text-3xl font-bold text-g4 mb-6">Manage Slots</h1>
 
-        {/* Form for Adding/Updating Slots */}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Date</label>
-            <input
-              type="date"
-              name="date"
-              value={form.date}
-              onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              required
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Slots</label>
-            <div className="flex flex-col">
-              {Object.keys(form.slots).map((slot, index) => (
-                <div key={index} className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name={slot}
-                    checked={form.slots[slot]}
-                    onChange={handleChange}
-                    className="mr-2"
-                  />
-                  <span>{slot}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        {/* Button to Add Slot */}
+        {!showForm && (
           <button
-            type="submit"
-            className="w-full bg-g2 text-white py-2 px-4 rounded-md shadow-lg hover:bg-g4 transition duration-300"
-            disabled={loading}
+            onClick={handleAddSlot}
+            className="bg-g2 text-white py-2 px-4 rounded-md shadow-lg hover:bg-g4 transition duration-300 mb-4"
           >
-            {loading ? 'Saving...' : isUpdating ? 'Update Slots' : 'Add Slots'}
+            Add Slot
           </button>
+        )}
 
-          {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
-        </form>
+        {/* Form for Adding/Updating Slots */}
+        {showForm && (
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Date</label>
+              <input
+                type="date"
+                name="date"
+                value={form.date}
+                onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                required
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700">Slots</label>
+              <div className="flex flex-col">
+                {Object.keys(form.slots).map((slot, index) => (
+                  <div key={index} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name={slot}
+                      checked={form.slots[slot]}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    <span>{slot}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-g2 text-white py-2 px-4 rounded-md shadow-lg hover:bg-g4 transition duration-300"
+              disabled={loading}
+            >
+              {loading ? 'Saving...' : isUpdating ? 'Update Slots' : 'Add Slots'}
+            </button>
+
+            {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+          </form>
+        )}
 
         {/* Displaying Slots */}
         <h2 className="text-2xl font-bold text-g4 mt-6">Current Slots</h2>

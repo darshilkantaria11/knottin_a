@@ -79,7 +79,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="text-center mt-6">
-          <p className="text-xs text-black">© 2024 Knottin Daycare. All rights reserved.</p>
+          <p className="text-xs text-black">© 2025 Knottin Daycare. All rights reserved.</p>
         </div>
       </div>
     </div>

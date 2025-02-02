@@ -1,6 +1,6 @@
 // /app/api/deleteposition/[id]/route.js
-import { dbConnect } from '../../../utils/mongoose';
-import Position from '../../../models/position';
+import { dbConnect } from '../../../../utils/mongoose';
+import Position from '../../../../models/position';
 import { NextResponse } from 'next/server';
 
 export async function DELETE(req, { params }) {

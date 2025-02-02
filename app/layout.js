@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
 import localFont from "next/font/local";
 import "./globals.css";
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Navbar from "./nopage/navbar"
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Navbar from "./nopage/navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,29 +17,25 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
-
-
 export default function RootLayout({ children }) {
-
   const router = useRouter();
 
   useEffect(() => {
     // Check if the user is authenticated
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
-    if (!token && router.pathname !== '/') {
+    if (!token && router.pathname !== "/") {
       // Redirect to login page if not authenticated and not on login page
-      router.push('/');
+      router.push("/");
     }
   }, [router]);
-
 
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-          <Navbar/>
+        <Navbar />
         {children}
       </body>
     </html>

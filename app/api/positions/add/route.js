@@ -1,23 +1,22 @@
-// /app/api/updateposition/[id]/route.js
+
 import { dbConnect } from '../../../utils/mongoose';
 import Position from '../../../models/position';
 import { NextResponse } from 'next/server';
 
-export async function PUT(req, { params }) {
-    const { id } = params;
-
+export async function POST(req) {
     try {
         await dbConnect();
         const { positionName, shortDescription, longDescription, positionType } = await req.json();
 
-        const updatedPosition = await Position.findByIdAndUpdate(id, {
+        const newPosition = new Position({
             positionName,
             shortDescription,
             longDescription,
             positionType,
-        }, { new: true });
+        });
 
-        return NextResponse.json({ message: 'Position updated successfully', position: updatedPosition }, { status: 200 });
+        await newPosition.save();
+        return NextResponse.json({ message: 'Position added successfully' }, { status: 201 });
     } catch (error) {
         console.error('Error:', error.message);
         return NextResponse.json({ error: error.message }, { status: 500 });

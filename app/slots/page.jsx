@@ -63,19 +63,31 @@ export default function SlotsPage() {
                 </h2>
                 {/* Time Slots */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
-                  {Object.entries(slot.slots).map(([time, isAvailable]) => (
-                    <button
-                      key={time}
-                      className={`text-sm px-4 py-2 rounded-md border ${
-                        isAvailable
-                          ? "bg-g2 text-white"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                      disabled={!isAvailable}
-                    >
-                      {time}
-                    </button>
-                  ))}
+                  {Object.entries(slot.slots).map(([time, isAvailable]) => {
+                    const isBooked = slot.bookedSlots.includes(time);
+
+                    return (
+                      <div key={time} className="relative">
+                        <button
+                          className={`text-sm px-4 py-2 rounded-md border w-full ${isAvailable
+                              ? "bg-g2 text-white"
+                              : isBooked
+                                ? "bg-g2 text-white cursor-not-allowed"
+                                : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            }`}
+                          disabled={!isAvailable}
+                        >
+                          {time}
+                        </button>
+                        {isBooked && (
+                          <p className="absolute top-4 right-0 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-red-600">
+                            ✓
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })}
+
                 </div>
 
                 {/* <div className="flex justify-center mt-6">

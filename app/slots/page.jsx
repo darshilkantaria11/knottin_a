@@ -80,7 +80,7 @@ export default function SlotsPage() {
                           {time}
                         </button>
                         {isBooked && (
-                          <p className="absolute top-4 right-0 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-yellow-300">
+                          <p className="absolute top-4 right-0 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-yellow-600">
                             ✓
                           </p>
                         )}

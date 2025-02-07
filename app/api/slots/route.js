@@ -1,5 +1,3 @@
-// /app/api/slots/route.js
-
 import { dbConnect } from '../../utils/mongoose';
 import Slot from '../../models/slot';
 import { NextResponse } from 'next/server';
@@ -17,7 +15,21 @@ export async function GET() {
 
         // Fetch remaining slots
         const slots = await Slot.find(); 
-        return NextResponse.json(slots);
+
+        // Sort slots object in each document
+        const sortedSlots = slots.map(slot => {
+            return {
+                ...slot.toObject(),
+                slots: {
+                    "10am-11am": slot.slots["10am-11am"] ?? false,
+                    "11am-12pm": slot.slots["11am-12pm"] ?? false,
+                    "12pm-1pm": slot.slots["12pm-1pm"] ?? false,
+                    "1pm-2pm": slot.slots["1pm-2pm"] ?? false,
+                }
+            };
+        });
+
+        return NextResponse.json(sortedSlots);
     } catch (error) {
         console.error('Error fetching slots:', error.message);
         return NextResponse.json({ error: error.message }, { status: 500 });

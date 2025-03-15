@@ -43,7 +43,7 @@ export default function Dashboard() {
         </Link>
 
         {/* Add Slots */}
-        <Link href="/slots">
+        {/* <Link href="/slots">
           <div className="flex items-center group bg-white p-8 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 hover:scale-105 transform min-h-[250px]">
             <div className="text-center">
               <h2 className="text-3xl font-bold text-g2 mb-4 group-hover:text-g4 transition-colors">
@@ -55,7 +55,7 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-        </Link>
+        </Link> */}
       </div>
 
       {/* Footer */}
